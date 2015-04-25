@@ -5,6 +5,8 @@
 #
 
 require 'thrift'
+require 'types_types'
+
 
 class User
   include ::Thrift::Struct, ::Thrift::Struct_Union
@@ -14,7 +16,7 @@ class User
   EMAIL = 4
 
   FIELDS = {
-    ID => {:type => ::Thrift::Types::I64, :name => 'id', :optional => true},
+    ID => {:type => ::Thrift::Types::I64, :name => 'id'},
     FIRST_NAME => {:type => ::Thrift::Types::STRING, :name => 'first_name'},
     LAST_NAME => {:type => ::Thrift::Types::STRING, :name => 'last_name'},
     EMAIL => {:type => ::Thrift::Types::STRING, :name => 'email'}
@@ -23,6 +25,7 @@ class User
   def struct_fields; FIELDS; end
 
   def validate
+    raise ::Thrift::ProtocolException.new(::Thrift::ProtocolException::UNKNOWN, 'Required field id is unset!') unless @id
     raise ::Thrift::ProtocolException.new(::Thrift::ProtocolException::UNKNOWN, 'Required field first_name is unset!') unless @first_name
     raise ::Thrift::ProtocolException.new(::Thrift::ProtocolException::UNKNOWN, 'Required field last_name is unset!') unless @last_name
     raise ::Thrift::ProtocolException.new(::Thrift::ProtocolException::UNKNOWN, 'Required field email is unset!') unless @email

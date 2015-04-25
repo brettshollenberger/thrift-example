@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"fmt"
 	"git.apache.org/thrift.git/lib/go/thrift"
+	"github.com/brettshollenberger/thrift-example/gen-go/types"
 )
 
 // (needed to ensure safety because of naive import list construction.)
@@ -14,10 +15,11 @@ var _ = thrift.ZERO
 var _ = fmt.Printf
 var _ = bytes.Equal
 
+var _ = types.GoUnusedProtection__
 var GoUnusedProtection__ int
 
 type User struct {
-	Id        *int64 `thrift:"id,1" json:"id"`
+	Id        int64  `thrift:"id,1,required" json:"id"`
 	FirstName string `thrift:"first_name,2,required" json:"first_name"`
 	LastName  string `thrift:"last_name,3,required" json:"last_name"`
 	Email     string `thrift:"email,4,required" json:"email"`
@@ -27,13 +29,8 @@ func NewUser() *User {
 	return &User{}
 }
 
-var User_Id_DEFAULT int64
-
 func (p *User) GetId() int64 {
-	if !p.IsSetId() {
-		return User_Id_DEFAULT
-	}
-	return *p.Id
+	return p.Id
 }
 
 func (p *User) GetFirstName() string {
@@ -47,10 +44,6 @@ func (p *User) GetLastName() string {
 func (p *User) GetEmail() string {
 	return p.Email
 }
-func (p *User) IsSetId() bool {
-	return p.Id != nil
-}
-
 func (p *User) Read(iprot thrift.TProtocol) error {
 	if _, err := iprot.ReadStructBegin(); err != nil {
 		return fmt.Errorf("%T read error: %s", p, err)
@@ -99,7 +92,7 @@ func (p *User) ReadField1(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadI64(); err != nil {
 		return fmt.Errorf("error reading field 1: %s", err)
 	} else {
-		p.Id = &v
+		p.Id = v
 	}
 	return nil
 }
@@ -157,16 +150,14 @@ func (p *User) Write(oprot thrift.TProtocol) error {
 }
 
 func (p *User) writeField1(oprot thrift.TProtocol) (err error) {
-	if p.IsSetId() {
-		if err := oprot.WriteFieldBegin("id", thrift.I64, 1); err != nil {
-			return fmt.Errorf("%T write field begin error 1:id: %s", p, err)
-		}
-		if err := oprot.WriteI64(int64(*p.Id)); err != nil {
-			return fmt.Errorf("%T.id (1) field write error: %s", p, err)
-		}
-		if err := oprot.WriteFieldEnd(); err != nil {
-			return fmt.Errorf("%T write field end error 1:id: %s", p, err)
-		}
+	if err := oprot.WriteFieldBegin("id", thrift.I64, 1); err != nil {
+		return fmt.Errorf("%T write field begin error 1:id: %s", p, err)
+	}
+	if err := oprot.WriteI64(int64(p.Id)); err != nil {
+		return fmt.Errorf("%T.id (1) field write error: %s", p, err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return fmt.Errorf("%T write field end error 1:id: %s", p, err)
 	}
 	return err
 }
